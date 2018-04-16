@@ -26,9 +26,10 @@ class BaseValidate extends Validate
         $params = $request->param();
         $params['token'] = $request->header('token');
 
-        if (!$this->check($params)) {
+        if (!$this->batch()->check($params)) {
             throw new ParameterException([
-                'msg' => is_array($this->error) ? implode(';', $this->error) : $this->error,
+                'message' => is_array($this->error) ? implode(';', $this->error) : $this->error,
+                // 'message' => $this->error,
             ]);
         }
 
@@ -46,12 +47,12 @@ class BaseValidate extends Validate
      *
      * @return bool|string
      */
-    protected function isPositiveInteger($value, $rule, $data, $field)
+    protected function isPositiveInteger($value, $rule = '', $data = [], $field = '')
     {
         if (is_numeric($value) && is_int($value + 0) && ($value + 0) > 0) {
             return true;
         }
 
-        return $field . ' 必须是正整数';
+        return false;
     }
 }

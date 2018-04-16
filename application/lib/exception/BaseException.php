@@ -20,7 +20,7 @@ class BaseException extends Exception
     /**
      * @var
      */
-    public $msg;
+    public $message;
 
     /**
      * @var
@@ -37,8 +37,8 @@ class BaseException extends Exception
             $this->code = $params['code'];
         }
 
-        if (array_key_exists('msg', $params)) {
-            $this->msg = $params['msg'];
+        if (array_key_exists('message', $params)) {
+            $this->message = $params['message'];
         }
 
         if (array_key_exists('error_code', $params)) {
