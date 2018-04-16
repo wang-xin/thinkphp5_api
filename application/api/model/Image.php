@@ -8,7 +8,6 @@
 
 namespace app\api\model;
 
-
 class Image extends BaseModel
 {
     protected $hidden = ['id', 'from', 'update_time', 'delete_time'];
@@ -16,15 +15,5 @@ class Image extends BaseModel
     protected function getUrlAttr($value, $data)
     {
         return $this->prefixImgUrl($value, $data);
-    }
-
-    private function prefixImgUrl($value, $data)
-    {
-        $finalUrl = $value;
-        if ($data['from'] == 1) {
-            $finalUrl = 'http://www.baidu.com' . $value;
-        }
-
-        return $finalUrl;
     }
 }
