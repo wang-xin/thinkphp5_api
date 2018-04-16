@@ -8,8 +8,6 @@
 
 namespace app\lib\exception;
 
-
-use Exception;
 use think\Config;
 use think\exception\Handle;
 use think\Log;
@@ -25,18 +23,18 @@ class ExceptionHandle extends Handle
     /**
      * @var string  错误信息
      */
-    private $msg;
+    private $message;
 
     /**
      * @var int 错误码
      */
     private $errorCode;
 
-    public function render(Exception $e)
+    public function render(\Exception $e)
     {
         if ($e instanceof BaseException) {
             $this->code = $e->code;
-            $this->msg = $e->msg;
+            $this->message = $e->message;
             $this->errorCode = $e->errorCode;
         } else {
             if (Config::get('app_debug')) {
@@ -44,7 +42,7 @@ class ExceptionHandle extends Handle
             }
 
             $this->code = 500;
-            $this->msg = '服务器内部错误';
+            $this->message = '服务器内部错误';
             $this->errorCode = 999;
 
             $this->recordErrorLog($e);
@@ -52,15 +50,15 @@ class ExceptionHandle extends Handle
 
         $request = Request::instance();
         $result = [
-            'msg'         => $this->msg,
             'error_code'  => $this->errorCode,
-            'request_url' => $request->method() . ' ' .$request->url(),
+            'message'     => $this->message,
+            'request_url' => $request->method() . ' ' . $request->url(),
         ];
 
         return json($result, $this->code);
     }
 
-    private function recordErrorLog(Exception $e)
+    private function recordErrorLog(\Exception $e)
     {
         Log::record($e->getMessage(), 'error');
     }
