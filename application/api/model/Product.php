@@ -32,6 +32,11 @@ class Product extends BaseModel
         return self::order(['create_time' => 'desc'])->limit($count)->select();
     }
 
+    public static function getProductsByCategoryId($id)
+    {
+        return self::where('category_id', '=', $id)->select();
+    }
+
     public static function getProductDetail($id)
     {
         return self::with(['properties', 'images.imgUrl'])->find($id);

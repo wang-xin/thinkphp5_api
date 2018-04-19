@@ -42,6 +42,7 @@ class Product extends BaseController
     /**
      * getOne
      * @auth King
+     *
      * @param $id
      *
      * @return array|false|\PDOStatement|string|\think\Model
@@ -58,5 +59,27 @@ class Product extends BaseController
         }
 
         return $product;
+    }
+
+    /**
+     * getAllByCategoryId
+     * @auth King
+     * @param $id
+     *
+     * @return false|\PDOStatement|string|\think\Collection
+     * @throws ProductException
+     * @throws \app\lib\exception\ParameterException
+     */
+    public function getAllByCategoryId($id)
+    {
+        (new IdMustBePositiveInt())->goCheck();
+
+        $products = ProductModel::getProductsByCategoryId($id);
+        if ($products->isEmpty()) {
+            throw new ProductException();
+        }
+        $products->hidden(['summary'])->toArray();
+
+        return $products;
     }
 }
