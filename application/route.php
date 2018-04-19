@@ -20,8 +20,13 @@ Route::group(':version/theme', function () {
     Route::get(':id', 'api/:version.Theme/getComplexOne');
 });
 
+Route::get(':version/category', 'api/:version.Category/getAll');
+Route::get(':version/category/:id', 'api/:version.Category/getOne');
 
 Route::get(':version/product/recent', 'api/:version.Product/getRecent');
+Route::get(':version/product/by_category', 'api/:version.Product/getAllByCategoryId');
 Route::get(':version/product/:id', 'api/:version.Product/getOne');
+
+
 
 Route::miss('api/v1.Miss/miss');
