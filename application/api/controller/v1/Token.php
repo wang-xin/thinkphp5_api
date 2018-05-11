@@ -17,11 +17,12 @@ class Token extends BaseController
     /**
      * getToken
      * @auth King
-     *
      * @param string $code
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \app\lib\exception\ParameterException
+     * @throws \app\lib\exception\WeChatException
      * @throws \think\Exception
      */
     public function getToken($code = '')

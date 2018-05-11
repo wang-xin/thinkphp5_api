@@ -8,4 +8,6 @@
 
 return [
     'img_prefix' => 'http://localhost:8000/image',
+
+    'token_expire_in' => 7200,
 ];

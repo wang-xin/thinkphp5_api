@@ -27,6 +27,6 @@ Route::get(':version/product/recent', 'api/:version.Product/getRecent');
 Route::get(':version/product/by_category', 'api/:version.Product/getAllByCategoryId');
 Route::get(':version/product/:id', 'api/:version.Product/getOne');
 
-
+Route::post(':version/token/user', 'api/:version.Token/getToken');
 
 Route::miss('api/v1.Miss/miss');

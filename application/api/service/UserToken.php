@@ -10,11 +10,14 @@ namespace app\api\service;
 
 
 use app\api\model\User;
+use app\lib\exception\TokenException;
 use app\lib\exception\WeChatException;
+use GuzzleHttp\Client;
+use think\Cache;
 use think\Config;
 use think\Exception;
 
-class UserToken
+class UserToken extends Token
 {
     /**
      * get
@@ -25,15 +28,21 @@ class UserToken
      * @return string
      * @throws Exception
      * @throws WeChatException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function get($code)
     {
         $appId = Config::get('wx.app_id');
         $appSecret = Config::get('wx.app_secret');
 
-        $loginUrl = sprintf(Config::get('login_url'), $appId, $appSecret, $code);
+        $loginUrl = sprintf(Config::get('wx.login_url'), $appId, $appSecret, $code);
 
-        $result = curl_get($loginUrl);
+        $client = new Client([
+            'verify' => false
+        ]);
+        $response = $client->request('GET', $loginUrl);
+        $result = $response->getBody();
+
         if (empty($result)) {
             throw new Exception('获取session_key及openID时异常，微信内部错误');
         }
@@ -69,6 +78,7 @@ class UserToken
      * @param $wxResult
      *
      * @return string
+     * @throws TokenException
      */
     private function grantToken($wxResult)
     {
@@ -82,9 +92,55 @@ class UserToken
             $uid = $user->id;
         }
 
-        $token = '';
+        $cacheValue = $this->prepareCacheValue($wxResult, $uid);
+
+        $token = $this->saveCache($cacheValue);
 
         return $token;
+    }
+
+    /**
+     * prepareCacheValue
+     * @auth King
+     *
+     * @param $wxResult
+     * @param $uid
+     *
+     * @return mixed
+     */
+    private function prepareCacheValue($wxResult, $uid)
+    {
+        $cacheValue = $wxResult;
+        $cacheValue['uid'] = $uid;
+        $cacheValue['scope'] = 16;
+
+        return $cacheValue;
+    }
+
+    /**
+     * saveCache
+     * @auth King
+     *
+     * @param $cacheValue
+     *
+     * @return string
+     * @throws TokenException
+     */
+    private function saveCache($cacheValue)
+    {
+        $key = self::generateToken();
+        $value = json_encode($cacheValue);
+        $expire_in = Config::get('setting.token_expire_in');
+
+        $result = Cache::set($key, $value, $expire_in);
+        if (!$result) {
+            throw new TokenException([
+                'message'   => '服务器缓存异常',
+                'errorCode' => 10005,
+            ]);
+        }
+
+        return $key;
     }
 
     /**
