@@ -8,7 +8,7 @@
 
 namespace app\api\service;
 
-use app\lib\common\Str;
+use app\lib\helper\Str;
 use think\Config;
 
 class Token

@@ -6,7 +6,7 @@
  * Time: 14:20
  */
 
-namespace app\lib\common;
+namespace app\lib\helper;
 
 
 class Str
