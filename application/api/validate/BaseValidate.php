@@ -14,6 +14,8 @@ use think\Validate;
 
 class BaseValidate extends Validate
 {
+    protected $params;
+
     /**
      * goCheck
      * @auth King
@@ -23,10 +25,10 @@ class BaseValidate extends Validate
     public function goCheck()
     {
         $request = Request::instance();
-        $params = $request->param();
-        $params['token'] = $request->header('token');
+        $this->params = $request->param();
+        $this->params['token'] = $request->header('token');
 
-        if (!$this->batch()->check($params)) {
+        if (!$this->batch()->check($this->params)) {
             throw new ParameterException([
                 'message' => is_array($this->error) ? implode(';', $this->error) : $this->error,
                 // 'message' => $this->error,
@@ -34,6 +36,16 @@ class BaseValidate extends Validate
         }
 
         return true;
+    }
+
+    public function getDataByRule()
+    {
+        $array = [];
+        foreach ($this->rule as $key => $value) {
+            $array[$key] = $this->params[$key];
+        }
+
+        return $array;
     }
 
     /**
@@ -59,6 +71,16 @@ class BaseValidate extends Validate
     protected function isNotEmpty($value, $rule = '', $data = [], $field = '')
     {
         if (empty($value)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function isMobile($value, $rule = '', $data = [], $field = '')
+    {
+        $pattern = '/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/';
+        if (!preg_match($pattern, $value)) {
             return false;
         }
 

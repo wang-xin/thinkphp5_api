@@ -8,6 +8,8 @@
 
 namespace app\api\model;
 
+use think\db\Query;
+
 class Product extends BaseModel
 {
     protected $hidden = ['from', 'create_time', 'update_time', 'delete_time', 'img_id', 'pivot'];
@@ -39,6 +41,10 @@ class Product extends BaseModel
 
     public static function getProductDetail($id)
     {
-        return self::with(['properties', 'images.imgUrl'])->find($id);
+        return self::with(['properties'])
+            ->with(['images' => function (Query $query) {
+                $query->with(['imgUrl'])->order(['order' => 'asc']);
+            }])
+            ->find($id);
     }
 }

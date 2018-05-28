@@ -29,4 +29,6 @@ Route::get(':version/product/:id', 'api/:version.Product/getOne');
 
 Route::post(':version/token/user', 'api/:version.Token/getToken');
 
+Route::post(':version/user/address', 'api/:version.Address/createOrUpdateAddress');
+
 Route::miss('api/v1.Miss/miss');
