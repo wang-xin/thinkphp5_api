@@ -17,7 +17,12 @@ use app\lib\exception\UserException;
 
 class Address extends BaseController
 {
+    protected $beforeActionList = [
+        'checkExclusiveScope' => ['only' => 'createOrUpdateAddress']
+    ];
+
     /**
+     * 新增|修改收货地址
      * createOrUpdateAddress
      * @auth King
      * @throws SuccessMessageException

@@ -8,6 +8,8 @@
 
 namespace app\api\service;
 
+use app\lib\enum\ScopeEnum;
+use app\lib\exception\ForbiddenException;
 use app\lib\exception\TokenException;
 use app\lib\helper\Str;
 use think\Cache;
@@ -21,7 +23,7 @@ class Token
     {
         $randChar = Str::generateRandChar(32);
 
-        $timestamp = $_SERVER['REQUEST_TIME_FLOAT'];
+        $timestamp = Request::instance()->time(true);
 
         $tokenSalt = Config::get('secure.token_salt');
 
@@ -31,6 +33,7 @@ class Token
     /**
      * getCurrentTokenVar
      * @auth King
+     *
      * @param $var
      *
      * @return mixed
@@ -68,5 +71,73 @@ class Token
         $uid = self::getCurrentTokenVar('uid');
 
         return $uid;
+    }
+
+    /**
+     * 验证权限大于等于用户权限
+     * needPrimaryScope
+     * @auth King
+     * @return bool
+     * @throws Exception
+     * @throws ForbiddenException
+     * @throws TokenException
+     */
+    public static function needPrimaryScope()
+    {
+        $scope = self::getCurrentTokenVar('scope');
+        if (!$scope) {
+            throw new TokenException();
+        }
+
+        if ($scope >= ScopeEnum::USER) {
+            return true;
+        }
+
+        throw new ForbiddenException();
+    }
+
+    /**
+     * 验证用户权限
+     * @auth King
+     * @return bool
+     * @throws Exception
+     * @throws ForbiddenException
+     * @throws TokenException
+     */
+    public static function needExclusiveScope()
+    {
+        $scope = self::getCurrentTokenVar('scope');
+        if (!$scope) {
+            throw new TokenException();
+        }
+
+        if ($scope == ScopeEnum::USER) {
+            return true;
+        }
+
+        throw new ForbiddenException();
+    }
+
+    /**
+     * 验证管理员权限
+     * needSuperScope
+     * @auth King
+     * @return bool
+     * @throws Exception
+     * @throws ForbiddenException
+     * @throws TokenException
+     */
+    public static function needSuperScope()
+    {
+        $scope = self::getCurrentTokenVar('scope');
+        if (!$scope) {
+            throw new TokenException();
+        }
+
+        if ($scope == ScopeEnum::SUPER) {
+            return true;
+        }
+
+        throw new ForbiddenException();
     }
 }
